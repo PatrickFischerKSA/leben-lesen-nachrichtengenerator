@@ -184,6 +184,9 @@ const reportRequirements = {
   secondDone: 'Hake «Zweites Folgetreffen vereinbart» ab.',
   secondDate: 'Gib das Datum des zweiten Folgetreffens ein.',
   secondTime: 'Gib die Uhrzeit des zweiten Folgetreffens ein.',
+  communicationDone: 'Hake «Kommunikationsweg und konkrete Absprachen vereinbart» ab.',
+  agreedChannel: 'Wähle den vereinbarten Kommunikationskanal aus.',
+  communicationDetails: 'Ergänze die vereinbarten Kontaktdaten oder beschreibe den Kommunikationsweg.',
   feedbackDone: 'Hake «Offene Fragen und Unterstützungsbedarf besprochen» ab.',
   reporter: 'Ergänze Name und Klasse der meldenden Person.',
 };
@@ -205,6 +208,7 @@ function checkReport() {
   const problems = [];
   for (const [name, message] of Object.entries(reportRequirements)) {
     const field = (name === 'topic' ? form : meeting).elements.namedItem(name);
+    if (name === 'communicationDetails' && meetingValue('agreedChannel') === 'Microsoft Teams') continue;
     const missing = field.type === 'checkbox' ? !field.checked : !field.value.trim();
     const undecided = name === 'format' && field.value === 'Noch offen';
     if (missing || undecided) problems.push({ field, message });
@@ -218,6 +222,8 @@ function renderReport() {
   const reporter = meetingValue('reporter');
   const format = [meetingValue('format'), meetingValue('formatDetail')].filter(Boolean).join(' – ');
   const feedback = meetingValue('feedback');
+  const channel = meetingValue('agreedChannel');
+  const communicationDetails = meetingValue('communicationDetails');
   report.value = [
     'Ergebnisprotokoll · Leben lesen · ' + topic,
     'Name und Klasse: ' + (reporter || 'noch offen'),
@@ -226,6 +232,8 @@ function renderReport() {
     'Aufgaben und Etappenziele: ' + (meetingValue('milestones') || 'noch offen'),
     '1. Folgetreffen: ' + meetingTime('firstDate', 'firstTime'),
     '2. Folgetreffen: ' + meetingTime('secondDate', 'secondTime'),
+    'Kommunikation: ' + (channel || 'noch offen'),
+    ...(communicationDetails ? ['Konkrete Angaben: ' + communicationDetails] : []),
     ...(feedback ? ['Fragen oder Schwierigkeiten: ' + feedback] : []),
   ].join('\n');
   reportStatus.textContent = '';

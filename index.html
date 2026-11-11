@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f6f2e9">
   <title>Leben lesen – Nachrichtengenerator</title>
   <link rel="stylesheet" href="./style.css">
-  <script src="./app.js?v=5" defer></script>
+  <script src="./app.js?v=6" defer></script>
 </head>
 <body>
 <main>
@@ -118,6 +118,19 @@
         <input id="secondDate" name="secondDate" type="date">
         <label for="secondTime">Uhrzeit des zweiten Folgetreffens</label>
         <input id="secondTime" name="secondTime" type="time">
+      </fieldset>
+      <fieldset>
+        <legend>Kommunikation in der Gruppe</legend>
+        <label><input type="checkbox" name="communicationDone"> Kommunikationsweg und konkrete Absprachen vereinbart</label>
+        <label for="agreedChannel">Vereinbarter Kommunikationskanal</label>
+        <select id="agreedChannel" name="agreedChannel">
+          <option value="">Bitte auswählen</option>
+          <option>Microsoft Teams</option><option>WhatsApp-Gruppenchat</option>
+          <option>E-Mail</option><option>Andere Möglichkeit</option>
+        </select>
+        <label for="communicationDetails">Konkrete Absprachen</label>
+        <p class="hint" id="communication-help">Bei Teams genügt die Auswahl. Bei WhatsApp gebt die vereinbarten Telefonnummern an, bei E-Mail die vereinbarten E-Mail-Adressen. Beschreibt bei «Andere Möglichkeit» den vereinbarten Weg.</p>
+        <textarea id="communicationDetails" name="communicationDetails" rows="2" aria-describedby="communication-help" placeholder="Telefonnummern oder E-Mail-Adressen gemäss eurer Absprache"></textarea>
       </fieldset>
       <fieldset>
         <legend>Rückmeldung an die Lehrperson</legend>
