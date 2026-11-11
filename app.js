@@ -1,5 +1,6 @@
 const form = document.querySelector('#details');
 const preview = document.querySelector('#message');
+const warning = document.querySelector('#warning');
 const status = document.querySelector('#status');
 const copyButton = document.querySelector('.copy');
 const requiredFields = {
@@ -57,7 +58,7 @@ function renderMessage() {
 }
 
 function validate() {
-  let firstInvalid = null;
+  const problems = [];
   for (const [name, requiredMessage] of Object.entries(requiredFields)) {
     const field = form.elements.namedItem(name);
     const input = value(name);
@@ -72,7 +73,7 @@ function validate() {
     }
 
     if (message) {
-      firstInvalid ??= field;
+      problems.push({ field, message });
       if (!error) {
         error = document.createElement('p');
         error.id = errorId;
@@ -92,14 +93,29 @@ function validate() {
       field.removeAttribute('aria-describedby');
     }
   }
-  return firstInvalid;
+  return problems;
+}
+
+function showWarnings(problems) {
+  warning.replaceChildren();
+  if (!problems.length) return;
+
+  const heading = document.createElement('p');
+  heading.textContent = 'Bitte prüfe vor dem Kopieren diese Angaben:';
+  const list = document.createElement('ul');
+  for (const { message } of problems) {
+    const item = document.createElement('li');
+    item.textContent = message;
+    list.append(item);
+  }
+  warning.append(heading, list);
 }
 
 function update() {
   revision++;
   status.textContent = '';
   renderMessage();
-  if (validationActive) validate();
+  if (validationActive) showWarnings(validate());
 }
 
 function selectMessage() {
@@ -110,7 +126,7 @@ function selectMessage() {
 form.addEventListener('input', update);
 form.addEventListener('reset', () => {
   validationActive = false;
-  validate();
+  showWarnings(validate());
   setTimeout(() => {
     update();
     form.elements.namedItem('topic').focus();
@@ -120,10 +136,11 @@ form.addEventListener('reset', () => {
 form.addEventListener('submit', async event => {
   event.preventDefault();
   validationActive = true;
-  const firstInvalid = validate();
-  if (firstInvalid) {
-    status.textContent = 'Bitte ergänze oder korrigiere die markierten Angaben.';
-    firstInvalid.focus();
+  status.textContent = '';
+  const problems = validate();
+  showWarnings(problems);
+  if (problems.length) {
+    problems[0].field.focus();
     return;
   }
   const submittedRevision = revision;

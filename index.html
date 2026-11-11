@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f6f2e9">
   <title>Leben lesen – Nachrichtengenerator</title>
   <link rel="stylesheet" href="./style.css">
-  <script src="./app.js" defer></script>
+  <script src="./app.js?v=3" defer></script>
 </head>
 <body>
 <main>
@@ -75,6 +75,7 @@
       <p class="hint">Kopiere den Text und füge ihn unverändert in euren Teams-Gruppenchat ein. Falls du den Chat neu erstellst, füge dort zuerst die oben eingetragenen Adressat*innen hinzu.</p>
       <textarea id="message" readonly spellcheck="false" aria-labelledby="preview-title"></textarea>
       <button class="copy" type="submit" form="details">Teams-Nachricht kopieren</button>
+      <div id="warning" role="alert" style="color: #912626"></div>
       <p id="status" role="status"></p>
     </section>
   </div>
