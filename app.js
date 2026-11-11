@@ -96,8 +96,8 @@ function validate() {
   return problems;
 }
 
-function showWarnings(problems) {
-  warning.replaceChildren();
+function showWarnings(problems, target = warning) {
+  target.replaceChildren();
   if (!problems.length) return;
 
   const heading = document.createElement('p');
@@ -108,7 +108,7 @@ function showWarnings(problems) {
     item.textContent = message;
     list.append(item);
   }
-  warning.append(heading, list);
+  target.append(heading, list);
 }
 
 function update() {
@@ -170,6 +170,24 @@ renderMessage();
 
 const meeting = document.querySelector('#meeting');
 const report = document.querySelector('#report');
+const reportWarning = document.querySelector('#report-warning');
+const reportRequirements = {
+  topic: 'Wähle das Thema der Projektgruppe aus.',
+  ideaDone: 'Hake «Projektidee und Präsentationsform geklärt» ab.',
+  idea: 'Halte die gemeinsame Projektidee fest.',
+  format: 'Wähle die Präsentationsform aus.',
+  planDone: 'Hake «Aufgaben, Etappenziele und Zeitplan geklärt» ab.',
+  milestones: 'Halte Aufgaben und Etappenziele fest.',
+  firstDone: 'Hake «Erstes Folgetreffen vereinbart» ab.',
+  firstDate: 'Gib das Datum des ersten Folgetreffens ein.',
+  firstTime: 'Gib die Uhrzeit des ersten Folgetreffens ein.',
+  secondDone: 'Hake «Zweites Folgetreffen vereinbart» ab.',
+  secondDate: 'Gib das Datum des zweiten Folgetreffens ein.',
+  secondTime: 'Gib die Uhrzeit des zweiten Folgetreffens ein.',
+  feedbackDone: 'Hake «Offene Fragen und Unterstützungsbedarf besprochen» ab.',
+  reporter: 'Ergänze Name und Klasse der meldenden Person.',
+};
+let reportValidationActive = false;
 const reportStatus = document.querySelector('#report-status');
 const reportDate = new Intl.DateTimeFormat('de-CH', { dateStyle: 'long', timeZone: 'UTC' });
 
@@ -181,6 +199,18 @@ function meetingTime(dateField, timeField) {
   const date = meetingValue(dateField);
   const time = meetingValue(timeField);
   return date && time ? reportDate.format(new Date(date)) + ', ' + time + ' Uhr' : 'noch offen';
+}
+
+function checkReport() {
+  const problems = [];
+  for (const [name, message] of Object.entries(reportRequirements)) {
+    const field = (name === 'topic' ? form : meeting).elements.namedItem(name);
+    const missing = field.type === 'checkbox' ? !field.checked : !field.value.trim();
+    const undecided = name === 'format' && field.value === 'Noch offen';
+    if (missing || undecided) problems.push({ field, message });
+  }
+  showWarnings(problems, reportWarning);
+  return problems;
 }
 
 function renderReport() {
@@ -199,6 +229,7 @@ function renderReport() {
     ...(feedback ? ['Fragen oder Schwierigkeiten: ' + feedback] : []),
   ].join('\n');
   reportStatus.textContent = '';
+  if (reportValidationActive) checkReport();
 }
 
 meeting.addEventListener('input', renderReport);
@@ -206,11 +237,9 @@ meeting.addEventListener('submit', event => event.preventDefault());
 form.addEventListener('input', renderReport);
 form.addEventListener('reset', () => setTimeout(renderReport, 0));
 document.querySelector('#copy-report').addEventListener('click', async () => {
-  if (!meetingValue('reporter')) {
-    reportStatus.textContent = 'Bitte ergänze Name und Klasse für die Rückmeldung.';
-    meeting.elements.namedItem('reporter').focus();
-    return;
-  }
+  reportValidationActive = true;
+  reportStatus.textContent = '';
+  if (checkReport().length) return;
   try {
     await navigator.clipboard.writeText(report.value);
     reportStatus.textContent = 'Ergebnisprotokoll kopiert.';

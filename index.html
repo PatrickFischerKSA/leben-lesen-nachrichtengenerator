@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f6f2e9">
   <title>Leben lesen – Nachrichtengenerator</title>
   <link rel="stylesheet" href="./style.css">
-  <script src="./app.js?v=4" defer></script>
+  <script src="./app.js?v=5" defer></script>
 </head>
 <body>
 <main>
@@ -134,6 +134,7 @@
         <label for="report">Ergebnisprotokoll für die Lehrperson</label>
         <textarea id="report" rows="9" readonly></textarea>
         <button class="copy" type="button" id="copy-report" style="margin-top: .7rem">Ergebnisprotokoll kopieren</button>
+        <div id="report-warning" role="alert" style="color: #912626"></div>
         <p id="report-status" role="status"></p>
       </fieldset>
     </form>
