@@ -190,7 +190,19 @@ const reportRequirements = {
   feedbackDone: 'Hake «Offene Fragen und Unterstützungsbedarf besprochen» ab.',
   reporter: 'Ergänze Name und Klasse der meldenden Person.',
 };
-let reportValidationActive = false;
+const reportCheckStatus = document.querySelector('#report-check-status');
+
+function contactDetailsIssue(channel, details) {
+  const contacts = details.split(/[\n,;]+/).map(contact => contact.trim()).filter(Boolean);
+  if (channel === 'E-Mail' && contacts.some(contact => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact))) {
+    return 'Gib gültige E-Mail-Adressen an, eine pro Zeile.';
+  }
+  if (channel === 'WhatsApp-Gruppenchat' && contacts.some(contact =>
+    !/^(?:\+|00)?\d{7,15}$/.test(contact.replace(/[\s().-]/g, '')))) {
+    return 'Gib gültige Telefonnummern an, eine pro Zeile.';
+  }
+  return contacts.length ? '' : 'Ergänze die vereinbarten Kontaktdaten oder beschreibe den Kommunikationsweg.';
+}
 const reportStatus = document.querySelector('#report-status');
 const reportDate = new Intl.DateTimeFormat('de-CH', { dateStyle: 'long', timeZone: 'UTC' });
 
@@ -206,14 +218,41 @@ function meetingTime(dateField, timeField) {
 
 function checkReport() {
   const problems = [];
+  const channel = meetingValue('agreedChannel');
   for (const [name, message] of Object.entries(reportRequirements)) {
     const field = (name === 'topic' ? form : meeting).elements.namedItem(name);
-    if (name === 'communicationDetails' && meetingValue('agreedChannel') === 'Microsoft Teams') continue;
+    if (name === 'communicationDetails') {
+      if (channel && channel !== 'Microsoft Teams') {
+        const issue = contactDetailsIssue(channel, field.value);
+        if (issue) problems.push({ field, message: issue });
+      }
+      continue;
+    }
     const missing = field.type === 'checkbox' ? !field.checked : !field.value.trim();
     const undecided = name === 'format' && field.value === 'Noch offen';
     if (missing || undecided) problems.push({ field, message });
   }
-  showWarnings(problems, reportWarning);
+  const summary = problems.length
+    ? (problems.length === 1 ? '1 Punkt ist noch offen.' : problems.length + ' Punkte sind noch offen.')
+    : 'Das Ergebnisprotokoll ist vollständig und kann kopiert werden.';
+  if (reportCheckStatus.textContent !== summary) reportCheckStatus.textContent = summary;
+  reportWarning.replaceChildren();
+  if (problems.length) {
+    const list = document.createElement('ul');
+    for (const { field, message } of problems) {
+      const item = document.createElement('li');
+      const link = document.createElement('a');
+      link.href = '#' + (field.id || field.name);
+      link.textContent = message;
+      link.addEventListener('click', event => {
+        event.preventDefault();
+        field.focus();
+      });
+      item.append(link);
+      list.append(item);
+    }
+    reportWarning.append(list);
+  }
   return problems;
 }
 
@@ -237,7 +276,7 @@ function renderReport() {
     ...(feedback ? ['Fragen oder Schwierigkeiten: ' + feedback] : []),
   ].join('\n');
   reportStatus.textContent = '';
-  if (reportValidationActive) checkReport();
+  checkReport();
 }
 
 meeting.addEventListener('input', renderReport);
@@ -245,9 +284,11 @@ meeting.addEventListener('submit', event => event.preventDefault());
 form.addEventListener('input', renderReport);
 form.addEventListener('reset', () => setTimeout(renderReport, 0));
 document.querySelector('#copy-report').addEventListener('click', async () => {
-  reportValidationActive = true;
   reportStatus.textContent = '';
-  if (checkReport().length) return;
+  if (checkReport().length) {
+    reportStatus.textContent = 'Bitte kläre die offenen Punkte vor dem Kopieren.';
+    return;
+  }
   try {
     await navigator.clipboard.writeText(report.value);
     reportStatus.textContent = 'Ergebnisprotokoll kopiert.';
