@@ -4,12 +4,13 @@ const status = document.querySelector('#status');
 const copyButton = document.querySelector('.copy');
 const requiredFields = {
   topic: 'Bitte wähle ein Thema aus.',
-  members: 'Bitte gib die Namen der Gruppenmitglieder ein.',
+  members: 'Bitte trage die Adressat*innen ein.',
   organiser: 'Bitte gib deinen Vor- und Nachnamen ein.',
   phone: 'Bitte gib eine Mobiltelefonnummer ein.',
   slot: 'Bitte wähle ein Zeitfenster aus.',
   place: 'Bitte gib einen Treffpunkt ein.',
 };
+const greetingList = new Intl.ListFormat('de-CH');
 const channelList = new Intl.ListFormat('de-CH', { type: 'disjunction' });
 let validationActive = false;
 let revision = 0;
@@ -30,7 +31,7 @@ function renderMessage() {
   const extra = value('extra');
 
   preview.value = [
-    'Hoi zäme!',
+    members.length ? 'Hoi ' + greetingList.format(members.map(name => name.replace(/\s*\(FM[123]\)$/i, '').trim() || name)) + '!' : 'Hoi zäme!',
     (partner ? 'Wir sind ' : 'Ich bin ') + names + ' aus der FM2 und ' +
       (partner ? 'übernehmen' : 'übernehme') +
       ' die Koordination unserer Projektgruppe beim FMS-Kreativprojekt «Leben lesen».',
@@ -143,7 +144,7 @@ form.addEventListener('submit', async event => {
   }
   if (submittedRevision === revision) {
     status.textContent = copied
-      ? 'Nachricht kopiert. Du kannst sie jetzt in euren Teams-Gruppenchat einfügen.'
+      ? 'Nachricht kopiert. Füge sie jetzt unverändert in euren Teams-Gruppenchat ein.'
       : 'Die Nachricht ist markiert. Kopiere sie über das Menü deines Geräts oder mit Strg+C bzw. ⌘C.';
   }
 });

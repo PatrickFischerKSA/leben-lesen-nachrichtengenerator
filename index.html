@@ -27,8 +27,8 @@
           <option>Lieben</option><option>Arbeiten</option><option>Wohnen</option>
           <option>Essen</option><option>Spielen</option><option>Sprechen</option><option>Reisen</option>
         </select>
-        <label for="members">Namen der Gruppenmitglieder</label>
-        <p class="hint" id="members-help">Ein Name pro Zeile, am besten mit Klassenzugehörigkeit (FM1, FM2, FM3).</p>
+        <label for="members">Adressat*innen der Teams-Nachricht</label>
+        <p class="hint" id="members-help">Trage alle Personen ein, die die Nachricht erhalten sollen. Ein Name pro Zeile, gerne mit Klasse (FM1, FM2, FM3).</p>
         <textarea id="members" name="members" rows="4" aria-describedby="members-help" required></textarea>
       </fieldset>
       <fieldset>
@@ -71,7 +71,8 @@
       <button class="reset" type="reset">Neue Nachricht erstellen</button>
     </form>
     <section class="preview" aria-labelledby="preview-title">
-      <h2 id="preview-title">Live-Vorschau</h2>
+      <h2 id="preview-title">Fertige Teams-Nachricht</h2>
+      <p class="hint">Kopiere den Text und füge ihn unverändert in euren Teams-Gruppenchat ein. Falls du den Chat neu erstellst, füge dort zuerst die oben eingetragenen Adressat*innen hinzu.</p>
       <textarea id="message" readonly spellcheck="false" aria-labelledby="preview-title"></textarea>
       <button class="copy" type="submit" form="details">Teams-Nachricht kopieren</button>
       <p id="status" role="status"></p>
