@@ -41,11 +41,11 @@ function renderMessage() {
       (members.length ? members.map(name => '• ' + name).join('\n') : '• [Namen der Gruppenmitglieder]'),
     'Auf der Projektwebsite findet ihr Informationen und Anregungen zu unserem Thema:\n' +
       'https://leben-lesen-fms.patrickoliverfischer.chatgpt.site/',
-    'Bitte schaut euch bis Mittwoch, 18. November, die Informationen zu unserem Thema kurz an und überlegt euch erste kreative Projektideen. Vielleicht entsteht daraus ein Kurzfilm, ein Spiel, eine Collage, eine Installation, eine Performance oder etwas ganz anderes.',
+    'Bitte schaut euch bis Mittwoch, 18. November, die Informationen zu unserem Thema kurz an. Welche Bilder, Erinnerungen, Situationen oder Fragen fallen euch spontan zu unserem Verb ein? Assoziiert frei und bringt ein paar Gedanken mit. Überlegt euch auch, welche Präsentationsform ihr vorschlagen würdet: Kurzfilm, künstlerische Installation, Live-Performance, Plakat, Podcast, Webseite oder eine andere Form.',
     'Unser erstes Gruppentreffen\nDatum: Mittwoch, 18. November 2026\nZeit: ' +
       (value('slot') || '[Zeitfenster]') + '\nTreffpunkt: ' + (value('place') || '[Treffpunkt]'),
-    'Wir haben rund 20 Minuten, um uns kennenzulernen, Ideen auszutauschen und möglichst eine gemeinsame Projektidee festzulegen. Wir verteilen erste Aufgaben und besprechen, wie wir in den kommenden Wochen zusammenarbeiten.',
-    'Wir arbeiten bis Freitag, 18. Dezember 2026, an unserem Projekt. An diesem Vormittag stellen wir es fertig. Am Nachmittag präsentieren wir es und eine Jury begutachtet die Projekte.',
+    'Wir haben rund 20 Minuten, um uns kennenzulernen, Ideen auszutauschen und möglichst eine gemeinsame Projektidee festzulegen. Wir besprechen die Präsentationsform, verteilen erste Aufgaben, legen Etappenziele fest und vereinbaren zwei kurze informelle Folgetreffen.',
+    'Wir arbeiten bis Freitag, 18. Dezember 2026, an unserem Projekt. An diesem Vormittag haben wir noch rund drei Stunden für die Finalisierung. Am Nachmittag präsentieren wir es und eine Jury begutachtet die Projekte.',
     'Wie wollen wir uns während der Projektphase am einfachsten austauschen? ' +
       question + ' Schreibt doch kurz, was euch am besten passt oder welche andere Idee ihr habt.',
     'Falls ihr Fragen habt, könnt ihr euch bei mir melden:\n' + organiser + ' – ' +
@@ -167,3 +167,57 @@ form.addEventListener('submit', async event => {
 });
 
 renderMessage();
+
+const meeting = document.querySelector('#meeting');
+const report = document.querySelector('#report');
+const reportStatus = document.querySelector('#report-status');
+const reportDate = new Intl.DateTimeFormat('de-CH', { dateStyle: 'long', timeZone: 'UTC' });
+
+function meetingValue(name) {
+  return meeting.elements.namedItem(name).value.trim();
+}
+
+function meetingTime(dateField, timeField) {
+  const date = meetingValue(dateField);
+  const time = meetingValue(timeField);
+  return date && time ? reportDate.format(new Date(date)) + ', ' + time + ' Uhr' : 'noch offen';
+}
+
+function renderReport() {
+  const topic = value('topic') || 'noch offen';
+  const reporter = meetingValue('reporter');
+  const format = [meetingValue('format'), meetingValue('formatDetail')].filter(Boolean).join(' – ');
+  const feedback = meetingValue('feedback');
+  report.value = [
+    'Ergebnisprotokoll · Leben lesen · ' + topic,
+    'Name und Klasse: ' + (reporter || 'noch offen'),
+    'Projektidee: ' + (meetingValue('idea') || 'noch offen'),
+    'Präsentationsform: ' + (format || 'noch offen'),
+    'Aufgaben und Etappenziele: ' + (meetingValue('milestones') || 'noch offen'),
+    '1. Folgetreffen: ' + meetingTime('firstDate', 'firstTime'),
+    '2. Folgetreffen: ' + meetingTime('secondDate', 'secondTime'),
+    ...(feedback ? ['Fragen oder Schwierigkeiten: ' + feedback] : []),
+  ].join('\n');
+  reportStatus.textContent = '';
+}
+
+meeting.addEventListener('input', renderReport);
+meeting.addEventListener('submit', event => event.preventDefault());
+form.addEventListener('input', renderReport);
+form.addEventListener('reset', () => setTimeout(renderReport, 0));
+document.querySelector('#copy-report').addEventListener('click', async () => {
+  if (!meetingValue('reporter')) {
+    reportStatus.textContent = 'Bitte ergänze Name und Klasse für die Rückmeldung.';
+    meeting.elements.namedItem('reporter').focus();
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(report.value);
+    reportStatus.textContent = 'Ergebnisprotokoll kopiert.';
+  } catch {
+    report.focus();
+    report.select();
+    reportStatus.textContent = 'Das Protokoll ist markiert. Kopiere es über das Menü deines Geräts.';
+  }
+});
+renderReport();

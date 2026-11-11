@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f6f2e9">
   <title>Leben lesen – Nachrichtengenerator</title>
   <link rel="stylesheet" href="./style.css">
-  <script src="./app.js?v=3" defer></script>
+  <script src="./app.js?v=4" defer></script>
 </head>
 <body>
 <main>
@@ -79,6 +79,65 @@
       <p id="status" role="status"></p>
     </section>
   </div>
+  <section aria-labelledby="meeting-title" style="margin-top: 2rem">
+    <h2 id="meeting-title">Checkliste für die Projektleitung</h2>
+    <p>Klärt diese Punkte beim ersten Treffen. Hakt jeden Punkt ab, sobald ihr ihn geklärt habt.</p>
+    <form id="meeting" autocomplete="off">
+      <fieldset>
+        <legend>Projektidee und Präsentationsform</legend>
+        <label><input type="checkbox" name="ideaDone"> Projektidee und Präsentationsform geklärt</label>
+        <label for="idea">Gemeinsame Projektidee in einem Satz</label>
+        <input id="idea" name="idea">
+        <label for="format">Präsentationsform</label>
+        <select id="format" name="format">
+          <option value="">Bitte auswählen</option>
+          <option>Kurzfilm</option><option>Künstlerische Installation</option>
+          <option>Live-Performance</option><option>Plakat</option><option>Podcast</option>
+          <option>Webseite</option><option>Andere Form</option><option>Noch offen</option>
+        </select>
+        <label for="formatDetail">Weitere Angaben zur Form (optional)</label>
+        <input id="formatDetail" name="formatDetail">
+      </fieldset>
+      <fieldset>
+        <legend>Aufgaben und Zeitplan</legend>
+        <label><input type="checkbox" name="planDone"> Aufgaben, Etappenziele und Zeitplan geklärt</label>
+        <label for="milestones">Wer übernimmt was bis wann?</label>
+        <p class="hint" id="milestones-help">Haltet fest, was bis zu jedem Folgetreffen bereit sein soll. Am Vormittag des 18. Dezember stehen noch rund drei Stunden für die Finalisierung zur Verfügung.</p>
+        <textarea id="milestones" name="milestones" rows="3" aria-describedby="milestones-help" placeholder="z. B. Entwurf bis zum ersten Folgetreffen, Rohfassung bis zum zweiten"></textarea>
+      </fieldset>
+      <fieldset>
+        <legend>Zwei informelle Folgetreffen</legend>
+        <p class="hint">Ein paar Minuten genügen, um euch auf den neuesten Stand zu bringen und offene Fragen zu klären.</p>
+        <label><input type="checkbox" name="firstDone"> Erstes Folgetreffen vereinbart</label>
+        <label for="firstDate">Datum des ersten Folgetreffens</label>
+        <input id="firstDate" name="firstDate" type="date">
+        <label for="firstTime">Uhrzeit des ersten Folgetreffens</label>
+        <input id="firstTime" name="firstTime" type="time">
+        <label><input type="checkbox" name="secondDone"> Zweites Folgetreffen vereinbart</label>
+        <label for="secondDate">Datum des zweiten Folgetreffens</label>
+        <input id="secondDate" name="secondDate" type="date">
+        <label for="secondTime">Uhrzeit des zweiten Folgetreffens</label>
+        <input id="secondTime" name="secondTime" type="time">
+      </fieldset>
+      <fieldset>
+        <legend>Rückmeldung an die Lehrperson</legend>
+        <label><input type="checkbox" name="feedbackDone"> Offene Fragen und Unterstützungsbedarf besprochen</label>
+        <label for="reporter">Name und Klasse der meldenden Person</label>
+        <input id="reporter" name="reporter" placeholder="Vorname Nachname (FM2)">
+        <label for="feedback">Offene Fragen oder Schwierigkeiten (optional)</label>
+        <p class="hint" id="feedback-help">Meldet Schwierigkeiten frühzeitig und gebt bei der Rückmeldung Name und Klasse an.</p>
+        <textarea id="feedback" name="feedback" rows="2" aria-describedby="feedback-help"></textarea>
+      </fieldset>
+      <fieldset>
+        <legend>Kurzes Ergebnisprotokoll</legend>
+        <p class="hint">Kopiere das Protokoll nach dem Treffen und sende es an die Lehrperson.</p>
+        <label for="report">Ergebnisprotokoll für die Lehrperson</label>
+        <textarea id="report" rows="9" readonly></textarea>
+        <button class="copy" type="button" id="copy-report" style="margin-top: .7rem">Ergebnisprotokoll kopieren</button>
+        <p id="report-status" role="status"></p>
+      </fieldset>
+    </form>
+  </section>
 </main>
 </body>
 </html>
