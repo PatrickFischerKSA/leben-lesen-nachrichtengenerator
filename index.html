@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f2e9">
+  <title>Leben lesen – Nachrichtengenerator</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+<main>
+  <header>
+    <p class="school">FMS · Kreativprojekt</p>
+    <h1>Leben lesen</h1>
+    <h2>Teams-Nachricht für deine Projektgruppe erstellen</h2>
+    <p>Trage die Angaben zu eurer Gruppe ein. Daraus entsteht automatisch eine Nachricht, mit der du alle Gruppenmitglieder über das erste Treffen und die nächsten Schritte informierst.</p>
+  </header>
+  <div class="layout">
+    <form id="details" autocomplete="off" novalidate>
+      <fieldset>
+        <legend>Projektgruppe</legend>
+        <label for="topic">Thema</label>
+        <select id="topic" name="topic" required>
+          <option value="">Thema auswählen</option>
+          <option>Altern</option><option>Schlafen</option><option>Streiten</option>
+          <option>Lieben</option><option>Arbeiten</option><option>Wohnen</option>
+          <option>Essen</option><option>Spielen</option><option>Sprechen</option><option>Reisen</option>
+        </select>
+        <label for="members">Namen der Gruppenmitglieder</label>
+        <p class="hint" id="members-help">Ein Name pro Zeile, am besten mit Klassenzugehörigkeit (FM1, FM2, FM3).</p>
+        <textarea id="members" name="members" rows="4" aria-describedby="members-help" required></textarea>
+      </fieldset>
+      <fieldset>
+        <legend>Koordination</legend>
+        <label for="organiser">Vorname und Nachname</label>
+        <input id="organiser" name="organiser" required>
+        <label for="partner">Weitere Koordinationsperson <small>optional</small></label>
+        <input id="partner" name="partner">
+        <label for="phone">Schweizer Mobiltelefonnummer</label>
+        <p class="hint" id="phone-help">Gib nur eine Telefonnummer an, die du mit den Gruppenmitgliedern teilen möchtest.</p>
+        <input id="phone" name="phone" type="tel" placeholder="079 123 45 67" aria-describedby="phone-help" required>
+      </fieldset>
+      <fieldset>
+        <legend>Erstes Gruppentreffen</legend>
+        <p class="date"><time datetime="2026-11-18">Mittwoch, 18. November 2026</time></p>
+        <label for="slot">Zeitfenster</label>
+        <select id="slot" name="slot" required>
+          <option value="">Zeitfenster auswählen</option>
+          <option>12.10–12.30 Uhr</option>
+          <option>12.30–12.50 Uhr</option>
+        </select>
+        <label for="place">Treffpunkt</label>
+        <input id="place" name="place" placeholder="z. B. Eingang Schulhaus A, 1. Stock beim Treppenhaus oder Zimmer …" required>
+      </fieldset>
+      <fieldset>
+        <legend>Wie möchten wir künftig kommunizieren?</legend>
+        <p class="hint">Wähle Möglichkeiten für die gemeinsame Entscheidung aus.</p>
+        <div class="choices">
+          <label><input type="checkbox" name="channel" value="Microsoft Teams"> Microsoft Teams</label>
+          <label><input type="checkbox" name="channel" value="einen WhatsApp-Gruppenchat"> WhatsApp-Gruppenchat</label>
+          <label><input type="checkbox" name="channel" value="E-Mail"> E-Mail</label>
+          <label><input type="checkbox" name="channel" value="eine andere Möglichkeit"> Andere Möglichkeit</label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Persönliche Ergänzung</legend>
+        <label for="extra">Weitere Mitteilungen <small>optional</small></label>
+        <textarea id="extra" name="extra" rows="3"></textarea>
+      </fieldset>
+      <button class="reset" type="reset">Neue Nachricht erstellen</button>
+    </form>
+    <section class="preview" aria-labelledby="preview-title">
+      <h2 id="preview-title">Live-Vorschau</h2>
+      <textarea id="message" readonly spellcheck="false" aria-labelledby="preview-title"></textarea>
+      <button class="copy" type="submit" form="details">Teams-Nachricht kopieren</button>
+      <p id="status" role="status"></p>
+    </section>
+  </div>
+</main>
+</body>
+</html>
